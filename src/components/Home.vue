@@ -83,9 +83,52 @@
         },
         watch: {
         },
-        mounted() {
+        mounted()
+        {
+            this.LoadRolls();
+        },
+        created: function ()
+        {
         },
         methods: {
+            SaveRolls: function ()
+            {
+                window.localStorage.setItem("Rolls", JSON.stringify({ WorldRoll: this.CurrentWorld.Roll, EventRoll: this.CurrentEvent.Roll }));
+            },
+
+            LoadRolls: function ()
+            {
+                var r;
+
+
+                if (window.localStorage.getItem("Rolls"))
+                {
+                    r = JSON.parse(window.localStorage.getItem("Rolls"));
+
+                    if (r.WorldRoll !== "")
+                    {
+                        this.WorldRoll = r.WorldRoll;
+                        this.SetWorldValue = r.WorldRoll;
+                        this.CurrentWorld = this.World.find(function (e)
+                        {
+                            return parseInt(e.Roll) === parseInt(r.WorldRoll);
+                        });
+
+                        this.EventRoll = r.EventRoll;
+                        this.SetEventValue = r.EventRoll;
+                        this.CurrentEvent = this.Event.find(function (e)
+                        {
+                            return parseInt(e.Roll) === parseInt(r.EventRoll);
+                        });
+                    }
+                    else
+                    {
+                        this.WorldRoll = "";
+                        this.EventRoll = "";
+                    }
+                }
+            },
+
             RollWorld: function ()
             {
                 var r;
@@ -97,6 +140,8 @@
                 this.CurrentWorld = this.World.find(function (e) {
                     return parseInt(e.Roll) === r;
                 });
+
+                this.SaveRolls();
             },
 
             SetWorld: function ()
@@ -111,6 +156,7 @@
                 });
 
                 this.ShowWorldSet = false;
+                this.SaveRolls();
             },
 
             RollEvent: function ()
@@ -124,6 +170,8 @@
                 this.CurrentEvent = this.Event.find(function (e) {
                     return parseInt(e.Roll) === parseInt(r);
                 });
+
+                this.SaveRolls();
             },
 
             SetEvent: function ()
@@ -138,6 +186,7 @@
                 });
 
                 this.ShowEventSet = false;
+                this.SaveRolls();
             },
 
             Percentile: function ()
