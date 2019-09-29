@@ -11,6 +11,9 @@
                 <v-btn @click="RollWorld()">Roll!</v-btn>
                 <v-btn @click="ShowWorldSet = true">Set...</v-btn>
             </v-card-text>
+            <v-overlay absolute :value="WorldOverlay">
+                Rollin' dem dice...
+            </v-overlay>
         </v-card>
         <v-card md6 class="HomeSection" max-width="600">
             <v-card-title>
@@ -23,6 +26,9 @@
                 <v-btn @click="RollEvent()">Roll!</v-btn>
                 <v-btn @click="ShowEventSet = true">Set...</v-btn>
             </v-card-text>
+            <v-overlay absolute :value="EventOverlay">
+                Rollin' dem dice...
+            </v-overlay>
         </v-card>
         <v-dialog v-model="ShowWorldSet" persistent max-width="400">
             <v-card>
@@ -75,7 +81,9 @@
                 rules: {
                     required: value => !!value || "This is required.",
                     percentile: value => ((parseInt(value) < 101) && (parseInt(value) > 0) && (parseFloat(value) % 1 == 0)) ? true : "This must be an integer between 1 and 100."
-                }
+                },
+                WorldOverlay: false,
+                EventOverlay: false
             };
         },
         computed:
@@ -132,16 +140,24 @@
             RollWorld: function ()
             {
                 var r;
-                
-                
-                r = this.Percentile();
+                var self;
 
-                this.SetWorldValue = r;
-                this.CurrentWorld = this.World.find(function (e) {
-                    return parseInt(e.Roll) === r;
-                });
 
-                this.SaveRolls();
+                this.WorldOverlay = true;
+                self = this;
+                setTimeout(function ()
+                {
+                    r = self.Percentile();
+
+                    self.SetWorldValue = r;
+                    self.CurrentWorld = self.World.find(function (e)
+                    {
+                        return parseInt(e.Roll) === r;
+                    });
+
+                self.SaveRolls();
+                    self.WorldOverlay = false;
+                }, 1000);
             },
 
             SetWorld: function ()
@@ -162,16 +178,24 @@
             RollEvent: function ()
             {
                 var r;
-                
-                
-                r = this.Percentile();
+                var self;
 
-                this.SetEventValue = r;
-                this.CurrentEvent = this.Event.find(function (e) {
-                    return parseInt(e.Roll) === parseInt(r);
-                });
 
-                this.SaveRolls();
+                this.EventOverlay = true;
+                self = this;
+                setTimeout(function ()
+                {
+                    r = self.Percentile();
+
+                    self.SetEventValue = r;
+                    self.CurrentEvent = self.Event.find(function (e)
+                    {
+                        return parseInt(e.Roll) === parseInt(r);
+                    });
+
+                    self.SaveRolls();
+                    self.EventOverlay = false;
+                }, 1000);
             },
 
             SetEvent: function ()
